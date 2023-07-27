@@ -1,5 +1,7 @@
 package com.example.day1.users;
 
+import java.util.Objects;
+
 public class UserRequest{
 	private String firstName;
 	private String lastName;
@@ -18,5 +20,18 @@ public class UserRequest{
 
 	public String getLastName(){
 		return lastName;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserRequest that = (UserRequest) o;
+		return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(firstName, lastName);
 	}
 }

@@ -1,10 +1,7 @@
 package com.example.day1.users;
 
 import com.example.day1.errors.MyError;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,30 +16,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserControllerFailureWithoutDBTest {
+class UserControllerFailureWithMockServiceTest {
 
     @Autowired
     TestRestTemplate restTemplate;
 
     @MockBean
-    UserRepository userRepository;
-
-    @AfterEach
-    public void clearData() {
-        userRepository.deleteAll();
-    }
+    private UserCommandService userCommandService;
 
     @Test
-    void createUserWithDuplicateFirstname() {
-
-        List<UserEntity> results = new ArrayList<>();
-        results.add(new UserEntity());
-        when(userRepository.findByFirstName("Surakiat")).thenReturn(results);
-
-        // Send request to api
+    void createUser_with_duplicate_firstname() {
         UserRequest userRequest = new UserRequest();
         userRequest.setFirstName("Surakiat");
         userRequest.setLastName("Sangkla");
+        // TODO
+        when(userCommandService.createUser(userRequest)).thenThrow(DuplicateFirstnameException.class);
+        // Send request to api
         ResponseEntity<MyError> result
                 = restTemplate.postForEntity("/users", userRequest, MyError.class);
         // Assert
