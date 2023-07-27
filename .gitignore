@@ -1,1 +1,3 @@
-.DS_Store
+.gitignore
+day1/.DS_Store
+day1/target

@@ -3,8 +3,10 @@ package com.example.day1;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
+@EnableTransactionManagement
 public class Day1Application {
 
 	public static void main(String[] args) {
@@ -14,7 +16,7 @@ public class Day1Application {
 //		for (String name : names) {
 //			System.out.println("name: " + name);
 //		}
-		System.out.println(context.getBeanDefinitionCount());
+		System.out.println("getBeanDefinitionCount : " + context.getBeanDefinitionCount());
 
 		// Use HelloSpring
 //		HelloSpring b1 = context.getBean(HelloSpring.class);

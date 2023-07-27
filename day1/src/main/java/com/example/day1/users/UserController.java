@@ -57,4 +57,10 @@ public class UserController {
         // Return with success code = 201
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
+
+    @GetMapping("/users/process")
+    public UserResponse getUserById() {
+        userCommandService.process();
+        return new UserResponse();
+    }
 }

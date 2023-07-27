@@ -1,5 +1,8 @@
 package com.example.day1.users;
 
+import com.example.day1.event.EventPublisher;
+import com.example.day1.noti.NotificationService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,14 +11,24 @@ import java.util.List;
 @Service
 public class UserCommandService {
 
-    @Autowired
     private UserRepository userRepository;
 
-    public UserCommandService() {
-    }
-
+    @Autowired
     public UserCommandService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Autowired
+    EventPublisher eventPublisher;
+
+    @Transactional
+    public void process() {
+        UserEntity userEntity = new UserEntity(1, "f1", "l2");
+        userRepository.save(userEntity);
+        userRepository.deleteAll();
+        // Send noti
+        eventPublisher.fire("Process done");
+        eventPublisher.fire2(1);
     }
 
     public Integer createUser(UserRequest userRequest) {
