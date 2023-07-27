@@ -24,6 +24,7 @@ class UserControllerFailureTest {
     @BeforeEach
     public void initDateForTest() {
         // Prepare user ::
+        userRepository.deleteAll();
         UserEntity user1 = new UserEntity(1, "Surakiat", "Sangkla");
         UserEntity user2 = new UserEntity(2, "User 2", "Lastname 2");
         UserEntity user3 = new UserEntity(3, "User 3", "Lastname 3");
