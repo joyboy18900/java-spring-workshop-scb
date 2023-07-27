@@ -1,4 +1,4 @@
-package com.example.day1.users;
+package com.example.day1.errors;
 
 public class MyError{
 	private String code;
