@@ -11,6 +11,10 @@ public class UserCommandService {
     @Autowired
     private UserRepository userRepository;
 
+    public UserCommandService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public Integer createUser(UserRequest userRequest) {
         // 1 :: Check firstname duplicate ?
         List<UserEntity> results = userRepository.findByFirstName(userRequest.getFirstName());
