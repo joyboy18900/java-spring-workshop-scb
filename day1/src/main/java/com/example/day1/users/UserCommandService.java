@@ -11,6 +11,9 @@ public class UserCommandService {
     @Autowired
     private UserRepository userRepository;
 
+    public UserCommandService() {
+    }
+
     public UserCommandService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
