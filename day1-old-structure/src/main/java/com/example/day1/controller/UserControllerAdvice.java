@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestControllerAdvice
 public class UserControllerAdvice {
 
-//    @ResponseBody
     @ExceptionHandler(DuplicateFirstnameException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<MyError> userNotFoundHandler(DuplicateFirstnameException e) {
         MyError error = new MyError();
         error.setCode("24000");

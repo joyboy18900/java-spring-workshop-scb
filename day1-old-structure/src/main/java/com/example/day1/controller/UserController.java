@@ -1,5 +1,6 @@
 package com.example.day1.controller;
 
+import com.example.day1.entity.UserEntity;
 import com.example.day1.model.request.UserRequest;
 import com.example.day1.model.response.UserResponse;
 import com.example.day1.service.UserCommandService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -17,26 +19,49 @@ public class UserController {
     private UserCommandService userCommandService;
 
     @GetMapping("/users")
-    public List<UserResponse> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserEntity> users = userCommandService.showAllUsers();
+        if(users.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
         List<UserResponse> userResponseList = new ArrayList<>();
-        userResponseList.add(new UserResponse(1,"User A", "LastName A"));
-        userResponseList.add(new UserResponse(2,"User B", "lastName B"));
-        return userResponseList;
+        for (UserEntity userEntity : users) {
+            UserResponse userResponse = new UserResponse();
+
+            userResponse.setId(userEntity.getId());
+            userResponse.setFirstName(userEntity.getFirstName());
+            userResponse.setLastName(userEntity.getLastName());
+
+            userResponseList.add(userResponse);
+        }
+
+//        userResponseList = users.stream()
+//                .map(userEntity -> {
+//                    UserResponse userResponse = new UserResponse();
+//                    userResponse.setId(userEntity.getId());
+//                    userResponse.setFirstName(userEntity.getFirstName());
+//                    userResponse.setLastName(userEntity.getLastName());
+//                    return userResponse;
+//                })
+//                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(userResponseList, HttpStatus.OK);
     }
 
-    // Demo of Path Variable
     @GetMapping("/users/{id}")
-    public UserResponse getUserById(@PathVariable int id) {
-        return new UserResponse(id, "Surakiat", "Sangkla");
-    }
+    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
+        Optional<UserEntity> user = userCommandService.showUserById(id);
+        if (user.isPresent()) {
+            UserResponse userResponse = new UserResponse();
+            userResponse.setId(user.get().getId());
+            userResponse.setFirstName(user.get().getFirstName());
+            userResponse.setLastName(user.get().getLastName());
 
-    // Demo of Request Parameter ?page=1
-    @GetMapping("/user")
-    public List<UserResponse> getAllUser(@RequestParam(defaultValue = "1") int page) {
-        List<UserResponse> userResponseList = new ArrayList<>();
-        userResponseList.add(new UserResponse(1, "Mr.test 1", "lastname 1"));
-        userResponseList.add(new UserResponse(2, "Mr.test 2", "lastname 2"));
-        return userResponseList;
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/users")
@@ -44,7 +69,6 @@ public class UserController {
         // 1. Get data from request body
         // 2. Validate input
         // TODO :: 3. call service layer
-        // userServiceV1.createUser();
         Integer resultCreateUser = userCommandService.createUser(userRequest);
 
         // 4. Return response to caller
@@ -57,9 +81,34 @@ public class UserController {
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 
-    @GetMapping("/users/process")
-    public UserResponse getUserById() {
-        userCommandService.process();
-        return new UserResponse();
+    @PutMapping("/users/{id}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable("id") int id, @RequestBody UserEntity user) {
+        Optional<UserEntity> userData = userCommandService.showUserById(id);
+        if (userData.isPresent()) {
+            UserEntity userDataTemp = userData.get();
+            userDataTemp.setFirstName(user.getFirstName());
+            userDataTemp.setLastName(user.getLastName());
+
+            // Return response to caller
+            UserEntity resultUser = userCommandService.saveUser(userDataTemp);
+            UserResponse userResponse = new UserResponse();
+            userResponse.setId(resultUser.getId());
+            userResponse.setFirstName(resultUser.getFirstName());
+            userResponse.setLastName(resultUser.getLastName());
+
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") int id) {
+        try {
+            userCommandService.deleteUser(id);
+            return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to delete the user.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

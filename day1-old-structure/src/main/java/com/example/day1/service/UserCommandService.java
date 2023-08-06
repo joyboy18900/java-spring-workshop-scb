@@ -1,15 +1,14 @@
 package com.example.day1.service;
 
-import com.example.day1.event.EventPublisher;
 import com.example.day1.model.exception.DuplicateFirstnameException;
 import com.example.day1.entity.UserEntity;
 import com.example.day1.repository.UserRepository;
 import com.example.day1.model.request.UserRequest;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserCommandService {
@@ -21,17 +20,12 @@ public class UserCommandService {
         this.userRepository = userRepository;
     }
 
-    @Autowired
-    EventPublisher eventPublisher;
+    public List<UserEntity> showAllUsers() {
+        return userRepository.findAll();
+    }
 
-    @Transactional
-    public void process() {
-        UserEntity userEntity = new UserEntity(1, "f1", "l2");
-        userRepository.save(userEntity);
-        userRepository.deleteAll();
-        // Send noti
-        eventPublisher.fire("Process done");
-        eventPublisher.fire2(1);
+    public Optional<UserEntity> showUserById(Integer id) {
+        return userRepository.findById(id);
     }
 
     public Integer createUser(UserRequest userRequest) {
@@ -42,8 +36,16 @@ public class UserCommandService {
             throw new DuplicateFirstnameException("");
         }
         // 2. Create new user
-        UserEntity userEntity = new UserEntity(1, userRequest.getFirstName(), userRequest.getLastName());
+        UserEntity userEntity = new UserEntity(null, userRequest.getFirstName(), userRequest.getLastName());
         userRepository.save(userEntity);
         return userEntity.getId();
+    }
+
+    public UserEntity saveUser(UserEntity user) {
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(int id) {
+        userRepository.deleteById(id);
     }
 }

@@ -1,21 +1,17 @@
 package com.example.day1.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-import java.util.Objects;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tbl_user")
+@Table(name = "users")
 public class UserEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @Column(name = "firstName")
+    @Column(name = "first_name")
     private String firstName;;
-    @Column(name = "lastName")
+    @Column(name = "last_name")
     private String lastName;
 
     public UserEntity() {
